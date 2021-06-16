@@ -1,10 +1,10 @@
 import { Form, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import SpecificationModal from "../specificationModal/";
-import { AiOutlineDelete } from "react-icons/ai";
 import InputItem from "../InputItem";
-import { modalShow } from "../../actions";
+import SpecificationModal from "../SpecificationModal";
+import { AiOutlineDelete } from "react-icons/ai";
+import { modalShow, addFormItem, removeFormItem } from "../../actions";
 
 const { Option } = Select;
 const FormListItem = ({ remove, fields }) => {
@@ -27,6 +27,15 @@ const FormListItem = ({ remove, fields }) => {
             fieldName={name}
             fieldPlaceHolder={placeholder}
           />
+        );
+        dispatch(
+          addFormItem({
+            field_id: name,
+            field_type: value,
+            field_name: name,
+            field_required: isRequired,
+            field_placeHolder: placeHolder,
+          })
         );
         break;
       default:
@@ -58,7 +67,7 @@ const FormListItem = ({ remove, fields }) => {
           <Select className="w-full" onChange={onItemHandler} autoFocus>
             <Option key="input">Text Input</Option>
           </Select>
-          <div className="my-5">{selectedItem}</div>
+          <div className="my-5 form-item">{selectedItem}</div>
           <div className="flex justify-between">
             <span className="font-bold">
               Required
@@ -68,7 +77,10 @@ const FormListItem = ({ remove, fields }) => {
             </span>
             <span
               className="text-2xl ml-3 cursor-pointer"
-              onClick={() => remove(name)}
+              onClick={() => {
+                dispatch(removeFormItem(name));
+                remove(name);
+              }}
             >
               <AiOutlineDelete />
             </span>
@@ -76,28 +88,6 @@ const FormListItem = ({ remove, fields }) => {
         </div>
       </Form.Item>
       <SpecificationModal form={form} setplaceHolder={setplaceHolder} />
-      {/* <Modal
-        visible={isModalVisible}
-        centered
-        okText="submit"
-        closable={false}
-        onCancel={() => {
-          dispatch(constants.MODAL_CLOSE);
-        }}
-        title="Specification"
-        onOk={() => {
-          form
-            .validateFields()
-            .then((values) => setplaceHolder(values.placeHolder));
-          dispatch(constants.MODAL_CLOSE);
-        }}
-      >
-        <Form form={form}>
-          <Form.Item label="PlaceHolder" name="placeHolder">
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal> */}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { constants } from "../constants";
 
 const initialValue = {
   isModalShow: false,
+  formItem: {},
 };
 
 const reducers = (state = initialValue, action) => {
@@ -16,6 +17,23 @@ const reducers = (state = initialValue, action) => {
       return {
         ...state,
         isModalShow: false,
+      };
+
+    case constants.ADD_FORMITEM:
+      const newState = Object.assign(state);
+      const item = {
+        ...action.formItem,
+      };
+      newState.formItem[action.formItem.field_name] = item;
+      console.log(newState);
+      return {
+        ...newState,
+      };
+
+    case constants.REMOVE_FORMITEM:
+      delete state.formItem[action.id];
+      return {
+        ...state,
       };
 
     default:
