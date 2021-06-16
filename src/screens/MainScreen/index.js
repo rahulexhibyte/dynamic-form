@@ -1,5 +1,5 @@
 import { Form, PageHeader, Button } from "antd";
-import FormListItem from "../../components/FormListItem/Index";
+import FormListItem from "../../components/FormListItem";
 const MainScreen = (props) => {
   return (
     <>

@@ -1,10 +1,14 @@
-import { Form, Input, Modal, Select, Switch } from "antd";
+import { Form, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import SpecificationModal from "../specificationModal/";
 import { AiOutlineDelete } from "react-icons/ai";
 import InputItem from "../InputItem";
+import { modalShow } from "../../actions";
 
 const { Option } = Select;
 const FormListItem = ({ remove, fields }) => {
+  const dispatch = useDispatch();
   const { name, ...restFields } = fields;
   const [form] = Form.useForm();
 
@@ -12,7 +16,6 @@ const FormListItem = ({ remove, fields }) => {
 
   const [itemTag, setItemTag] = useState(null);
   const [isRequired, setisRequired] = useState(false);
-  const [isModalVsible, setIsModalVisible] = useState(false);
   const [placeHolder, setplaceHolder] = useState("");
 
   const onselectedItemHandler = ({ value, isRequired, placeholder }) => {
@@ -40,7 +43,7 @@ const FormListItem = ({ remove, fields }) => {
   }, [itemTag, isRequired, placeHolder]);
 
   const onItemHandler = (value) => {
-    setIsModalVisible(true);
+    dispatch(modalShow());
     setItemTag(value);
   };
 
@@ -72,26 +75,21 @@ const FormListItem = ({ remove, fields }) => {
           </div>
         </div>
       </Form.Item>
-      {/* <specificationModal
-        isModalVsible={isModalVsible}
-        setIsModalVisible={setIsModalVisible}
-        form={form}
-        setplaceHolder={setplaceHolder}
-      /> */}
-      <Modal
-        visible={isModalVsible}
+      <SpecificationModal form={form} setplaceHolder={setplaceHolder} />
+      {/* <Modal
+        visible={isModalVisible}
         centered
         okText="submit"
         closable={false}
         onCancel={() => {
-          setIsModalVisible(false);
+          dispatch(constants.MODAL_CLOSE);
         }}
         title="Specification"
         onOk={() => {
           form
             .validateFields()
             .then((values) => setplaceHolder(values.placeHolder));
-          setIsModalVisible(false);
+          dispatch(constants.MODAL_CLOSE);
         }}
       >
         <Form form={form}>
@@ -99,7 +97,7 @@ const FormListItem = ({ remove, fields }) => {
             <Input />
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

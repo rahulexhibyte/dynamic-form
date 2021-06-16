@@ -1,27 +1,25 @@
 import { Form, Input, Modal } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { modalClose } from "../../actions";
 
-const specificationModal = ({
-  isModalVsible,
-  setIsModalVisible,
-  form,
-  setplaceHolder,
-}) => {
+const SpecificationModal = ({ form, setplaceHolder }) => {
+  const isModalShow = useSelector((state) => state.isModalShow);
+  const dispatch = useDispatch();
   return (
     <Modal
-      visible={isModalVsible}
+      visible={isModalShow}
       centered
       okText="submit"
       closable={false}
       onCancel={() => {
-        setIsModalVisible(false);
+        dispatch(modalClose());
       }}
       title="Specification"
       onOk={() => {
         form
           .validateFields()
           .then((values) => setplaceHolder(values.placeHolder));
-
-        setIsModalVisible(false);
+        dispatch(modalClose());
       }}
     >
       <Form form={form}>
@@ -33,4 +31,4 @@ const specificationModal = ({
   );
 };
 
-export default specificationModal;
+export default SpecificationModal;
