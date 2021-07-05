@@ -1,9 +1,9 @@
-import { Form, Input, Modal } from "antd";
+import { Modal } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { modalClose } from "../../actions";
+import { closeModal } from "../../redux/actions/modal";
 
-const SpecificationModal = ({ form, setplaceHolder }) => {
-  const isModalShow = useSelector((state) => state.isModalShow);
+const SpecificationModal = ({ onSubmit, children }) => {
+  const isModalShow = useSelector((state) => state.modal.isModalOpen);
   const dispatch = useDispatch();
   return (
     <Modal
@@ -12,21 +12,12 @@ const SpecificationModal = ({ form, setplaceHolder }) => {
       okText="submit"
       closable={false}
       onCancel={() => {
-        dispatch(modalClose());
+        dispatch(closeModal());
       }}
       title="Specification"
-      onOk={() => {
-        form
-          .validateFields()
-          .then((values) => setplaceHolder(values.placeHolder));
-        dispatch(modalClose());
-      }}
+      onOk={onSubmit}
     >
-      <Form form={form}>
-        <Form.Item label="PlaceHolder" name="placeHolder">
-          <Input />
-        </Form.Item>
-      </Form>
+      {children}
     </Modal>
   );
 };
