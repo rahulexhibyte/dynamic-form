@@ -1,6 +1,6 @@
 import { Form, Input, Space, Button, Select } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const { Option } = Select;
 const RadioGroupSpecificationModal = ({ form }) => {

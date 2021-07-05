@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { PageHeader, Form, Button } from "antd";
-import TextAreaItem from "../../components/formItems/textAreaItem";
-import InputItem from "../../components/formItems/inputItem";
-import DropDownItem from "../../components/formItems/dropdownItem";
-import RadioGroupItem from "../../components/formItems/radiogroupItem";
 import Title from "antd/lib/typography/Title";
+import Text from "antd/lib/typography/Text";
+import { Input, Select, Radio, Space } from "antd";
+
+const { Option } = Select;
 
 const PreviewForm = (props) => {
   const { formid } = useParams();
@@ -17,59 +17,46 @@ const PreviewForm = (props) => {
   console.log(Object.values(formDetails[`${formid}`]));
 
   const getformItem = (formItem) => {
+    const name = formItem.field_label.replace(/\s+/g, "").toLowerCase();
     switch (formItem.field_type) {
       case "text-area":
         return (
-          <Form.Item
-            name={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-            label={formItem.field_label}
-          >
-            <TextAreaItem
-              fieldRequired={formItem.field_required}
-              fieldName={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-              fieldPlaceHolder={formItem.field_placeHolder}
-            ></TextAreaItem>
-          </Form.Item>
+          <Input.TextArea
+            required={formItem.field_required}
+            placeholder={formItem.field_placeHolder}
+            name={name}
+            className="resize-none"
+          />
         );
       case "input":
-        return (
-          <Form.Item
-            name={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-            label={formItem.field_label}
-          >
-            <InputItem
-              fieldRequired={formItem.field_required}
-              fieldName={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-              fieldPlaceHolder={formItem.field_placeHolder}
-            ></InputItem>
-          </Form.Item>
-        );
+        return <Input placeholder={formItem.field_placeHolder} name={name} />;
       case "dropdown":
         return (
-          <Form.Item
-            name={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-            label={formItem.field_label}
-          >
-            <DropDownItem
-              fieldRequired={formItem.field_required}
-              fieldName={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-              fieldPlaceHolder={formItem.field_placeHolder}
-              options={formItem.field_options}
-            ></DropDownItem>
-          </Form.Item>
+          <Select placeholder={formItem.field_placeHolder} name={name}>
+            {formItem.field_options &&
+              formItem.field_options.map((option, index) => {
+                return (
+                  <Option value={option.Value} key={index}>
+                    {option.Key}
+                  </Option>
+                );
+              })}
+          </Select>
         );
       case "radiogroup":
         return (
-          <Form.Item
-            name={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-            label={formItem.field_label}
-          >
-            <RadioGroupItem
-              direction={formItem.field_direction}
-              fieldName={formItem.field_label.replace(/\s+/g, "").toLowerCase()}
-              options={formItem.field_options}
-            />
-          </Form.Item>
+          <Radio.Group name={name}>
+            <Space direction={formItem.field_direction}>
+              {formItem.field_options &&
+                formItem.field_options.map((option, index) => {
+                  return (
+                    <Radio value={option.Value} key={index}>
+                      {option.Key}
+                    </Radio>
+                  );
+                })}
+            </Space>
+          </Radio.Group>
         );
       default:
         return <></>;
@@ -85,12 +72,31 @@ const PreviewForm = (props) => {
       <PageHeader title="Welcome to Forms Preview" />
       <div className="lg:w-1/3 md:w-1/2 sm:w-1/2 xs:w-2/3 mx-auto pb-5">
         <Title level={2}>{formDetails[`${formid}`]["title"]}</Title>
-        <Title level={5}>{formDetails[`${formid}`]["desc"]}</Title>
+        <div className="p-5">
+          <Text className="font-weight-normal text-left">
+            {formDetails[`${formid}`]["desc"]}
+          </Text>
+        </div>
         <Form layout="vertical" onFinish={onFInishHandler}>
           {Object.values(formDetails[`${formid}`]["formItem"]) &&
             Object.values(formDetails[`${formid}`]["formItem"]).map(
               (formItem, index) => {
-                return getformItem(formItem);
+                return (
+                  <Form.Item
+                    name={formItem.field_label
+                      .replace(/\s+/g, "")
+                      .toLowerCase()}
+                    label={formItem.field_label}
+                    rules={[
+                      formItem.field_required && {
+                        required: true,
+                        message: `Fill ${formItem.field_label} Carefully`,
+                      },
+                    ]}
+                  >
+                    {getformItem(formItem)}
+                  </Form.Item>
+                );
               }
             )}
           <Button type="primary" htmlType="submit">
