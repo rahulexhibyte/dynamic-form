@@ -4,16 +4,21 @@ import { useDispatch } from "react-redux";
 import InputItem from "../formItems/inputItem";
 import TextAreaItem from "../formItems/textAreaItem";
 import DropDownItem from "../formItems/dropdownItem";
+import CheckBoxItem from "../formItems/checkboxItem";
+import RadioGroupItem from "../formItems/radiogroupItem";
+import DatePickerItem from "../formItems/datePickerItem";
 
 import SpecificationModal from "../SpecificationModal";
 import { AiOutlineDelete } from "react-icons/ai";
 import { addFormItem, removeFormItem } from "../../redux/actions/formItem";
 import { closeModal, openModal } from "../../redux/actions/modal";
+
 import InputSpecificationModal from "../itemSpeciModal/inputModal";
 import TextAreaSpecificationModal from "../itemSpeciModal/textAreaModal";
 import DropDownSpecificationModal from "../itemSpeciModal/dropdownModal";
 import RadioGropSpecificationModal from "../itemSpeciModal/radiogroupModal";
-import RadioGroupItem from "../formItems/radiogroupItem";
+import CheckBoxSpecificationModal from "../itemSpeciModal/checkboxModal";
+import DatePickerSpecificationModal from "../itemSpeciModal/dateModal";
 
 const { Option } = Select;
 const FormListItem = ({ remove, fields }) => {
@@ -28,6 +33,7 @@ const FormListItem = ({ remove, fields }) => {
   const [isRequired, setisRequired] = useState(false);
 
   const onselectedItemHandler = (attr) => {
+    console.log(attr);
     let formItem = {};
     switch (attr.value) {
       case "input":
@@ -106,6 +112,48 @@ const FormListItem = ({ remove, fields }) => {
         );
         dispatch(addFormItem(formItem));
         break;
+      case "checkboxes":
+        formItem = {
+          field_label: attr.label,
+          field_id: name,
+          field_type: attr.value,
+          field_name: name,
+          field_required: attr.isRequired,
+          field_placeHolder: attr.placeholder,
+          field_options: attr.options,
+          field_direction: attr.direction,
+        };
+        setselectedItem(
+          <CheckBoxItem
+            direction={attr.direction}
+            fieldName={name}
+            options={attr.options}
+          />
+        );
+        dispatch(addFormItem(formItem));
+        break;
+      case "date":
+        formItem = {
+          field_label: attr.label,
+          field_id: name,
+          field_type: attr.value,
+          field_name: name,
+          field_required: attr.isRequired,
+          field_placeHolder: attr.placeholder,
+          field_disabledDate: attr.disabledDate,
+          field_defaultDate: attr.defaultValue,
+          field_disabledDateNav: attr.disabledDateNav,
+        };
+        setselectedItem(
+          <DatePickerItem
+            defaultValue={attr.defaultValue}
+            placeholder={attr.placeholder}
+            disabledDate={attr.disabledDate}
+            disabledDateNav={attr.disabledDateNav}
+          ></DatePickerItem>
+        );
+        dispatch(addFormItem(formItem));
+        break;
       default:
         setselectedItem(null);
         break;
@@ -113,13 +161,20 @@ const FormListItem = ({ remove, fields }) => {
   };
 
   useEffect(() => {
+    console.log(itemSpecification);
     onselectedItemHandler({
       label: itemSpecification.label,
       value: itemTag,
       isRequired,
       placeholder: itemSpecification.placeHolder || "",
       options: itemSpecification.options || [],
-      direction: itemTag === "radiogroup" ? itemSpecification.direction : "",
+      direction:
+        itemTag === "radiogroup" || itemTag === "checkboxes"
+          ? itemSpecification.direction
+          : "",
+      disabledDate: itemSpecification.disabledDate || null,
+      disabledDateNav: itemSpecification.disabledDateNav || null,
+      defaultValue: itemSpecification.defaultValue || null,
     });
   }, [itemTag, isRequired, itemSpecification]);
 
@@ -186,6 +241,8 @@ const FormListItem = ({ remove, fields }) => {
         {itemTag === "radiogroup" && (
           <RadioGropSpecificationModal form={form} />
         )}
+        {itemTag === "date" && <DatePickerSpecificationModal form={form} />}
+        {itemTag === "checkboxes" && <CheckBoxSpecificationModal form={form} />}
       </SpecificationModal>
     </div>
   );

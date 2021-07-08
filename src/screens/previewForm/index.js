@@ -4,7 +4,8 @@ import { useParams } from "react-router-dom";
 import { PageHeader, Form, Button } from "antd";
 import Title from "antd/lib/typography/Title";
 import Text from "antd/lib/typography/Text";
-import { Input, Select, Radio, Space } from "antd";
+import { Input, Select, Radio, Space, Checkbox, DatePicker } from "antd";
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -58,6 +59,36 @@ const PreviewForm = (props) => {
             </Space>
           </Radio.Group>
         );
+      case "checkboxes":
+        return (
+          <Checkbox.Group name={name}>
+            <Space direction={formItem.field_direction}>
+              {formItem.field_options &&
+                formItem.field_options.map((option, index) => {
+                  return (
+                    <Checkbox value={option.Value} key={index}>
+                      {option.Key}
+                    </Checkbox>
+                  );
+                })}
+            </Space>
+          </Checkbox.Group>
+        );
+      case "date":
+        const defaultDate = formItem.field_defaultDate.format("DD/MM/YYYY");
+        return (
+          <DatePicker
+            defaultValue={moment(defaultDate, "DD/MM/YYYY")}
+            placeholder={formItem.field_placeHolder}
+            className="w-full"
+            format="DD/MM/YYYY"
+            disabledDate={(current) => {
+              return formItem.field_disabledDateNav === "before"
+                ? current && current < formItem.field_disabledDate.endOf("day")
+                : current && current > formItem.field_disabledDate.endOf("day");
+            }}
+          ></DatePicker>
+        );
       default:
         return <></>;
     }
@@ -66,7 +97,9 @@ const PreviewForm = (props) => {
   const onFInishHandler = (values) => {
     console.log(values);
   };
+
   console.log(formDetails[`${formid}`]["title"]);
+
   return (
     <>
       <PageHeader title="Welcome to Forms Preview" />

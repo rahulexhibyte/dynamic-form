@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <Switch>
-        <Route path="/forms">
+        <Route exact path="/forms">
           <Dashboard />
         </Route>
         <Route exact path="/">
